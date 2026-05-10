@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Кабинет ветеринара - KittyCare{% endblock %}
+
+{% block content %}
+<section class="med-header">
+  <div>
+    <p class="eyebrow">Окно роли: {{ role_name }}</p>
+    <h1>Журнал назначений и паспортов</h1>
+  </div>
+  <div class="metric-strip">
+    {% for label, value in stats.items %}
+      <span><strong>{{ value }}</strong>{{ label }}</span>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="workspace vet-workspace">
+  <aside class="side-rail">
+    {% if can_manage_passports %}
+      <h2>Создать паспорт</h2>
+      <form method="post" class="stack-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create_passport">
+        {{ passport_form.as_p }}
+        <button class="primary-button" type="submit">Создать паспорт</button>
+      </form>
+    {% endif %}
+    {% if can_manage_records %}
+      <hr>
+      <h2>Новое назначение</h2>
+      <form method="post" class="stack-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create_record">
+        {{ record_form.as_p }}
+        <button class="primary-button" type="submit">Добавить назначение</button>
+      </form>
+    {% endif %}
+  </aside>
+
+  <section class="main-flow">
+    <div class="section-line">
+      <h2>Реестр пациентов</h2>
+      <a href="/api/health-passports/">API</a>
+    </div>
+    <div class="registry-list">
+      {% for passport in passports %}
+        <article class="registry-row">
+          <div>
+            <strong>{{ passport.cat.name }}</strong>
+            <span>владелец: {{ passport.cat.owner.username }} · чип: {{ passport.microchip_number|default:"-" }}</span>
+          </div>
+          <div><span class="badge">{{ passport.records_total }} записей</span></div>
+          {% if can_manage_passports %}
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="delete_passport">
+              <input type="hidden" name="passport_id" value="{{ passport.id }}">
+              <button class="danger-button" type="submit">Удалить</button>
+            </form>
+          {% endif %}
+        </article>
+      {% empty %}
+        <p class="muted">Паспорта пока не созданы.</p>
+      {% endfor %}
+    </div>
+
+    <div class="section-line">
+      <h2>Назначения и процедуры</h2>
+      <a href="/api/health-records/">API</a>
+    </div>
+    <div class="prescription-list">
+      {% for record in records %}
+        <div class="prescription-row with-action">
+          <time>{{ record.event_date }}</time>
+          <strong>{{ record.title }}</strong>
+          <span>{{ record.passport.cat.name }} · {{ record.get_record_type_display }} · {{ record.created_by }}</span>
+          {% if record.next_due_date %}<mark>до {{ record.next_due_date }}</mark>{% endif %}
+          {% if can_manage_records %}
+            <form method="post">
+              {% csrf_token %}
+              <input type="hidden" name="action" value="delete_record">
+              <input type="hidden" name="record_id" value="{{ record.id }}">
+              <button class="danger-button" type="submit">Удалить</button>
+            </form>
+          {% endif %}
+        </div>
+      {% empty %}
+        <p class="muted">Записей пока нет.</p>
+      {% endfor %}
+    </div>
+  </section>
+</section>
+{% endblock %}

@@ -1,0 +1,1409 @@
+openapi: 3.0.3
+info:
+  title: Kittygram Health Passport API
+  version: 1.0.0
+  description: API для учета котов, паспортов здоровья, медицинских записей, ролей
+    и пользователей.
+paths:
+  /api/cats/:
+    get:
+      operationId: api_cats_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCatList'
+          description: ''
+    post:
+      operationId: api_cats_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cat'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Cat'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Cat'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cat'
+          description: ''
+  /api/cats/{id}/:
+    get:
+      operationId: api_cats_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this кот.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cat'
+          description: ''
+    put:
+      operationId: api_cats_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this кот.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Cat'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Cat'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Cat'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cat'
+          description: ''
+    patch:
+      operationId: api_cats_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this кот.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCat'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCat'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCat'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cat'
+          description: ''
+    delete:
+      operationId: api_cats_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this кот.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/health-passports/:
+    get:
+      operationId: api_health_passports_list
+      parameters:
+      - in: query
+        name: blood_type
+        schema:
+          type: string
+          title: Группа крови
+          enum:
+          - a
+          - ab
+          - b
+          - unknown
+        description: |-
+          * `unknown` - Неизвестно
+          * `a` - A
+          * `b` - B
+          * `ab` - AB
+      - in: query
+        name: cat
+        schema:
+          type: number
+      - in: query
+        name: has_microchip
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: sterilized
+        schema:
+          type: boolean
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHealthPassportList'
+          description: ''
+    post:
+      operationId: api_health_passports_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthPassport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HealthPassport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HealthPassport'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthPassport'
+          description: ''
+  /api/health-passports/{id}/:
+    get:
+      operationId: api_health_passports_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this паспорт здоровья.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthPassport'
+          description: ''
+    put:
+      operationId: api_health_passports_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this паспорт здоровья.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthPassport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HealthPassport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HealthPassport'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthPassport'
+          description: ''
+    patch:
+      operationId: api_health_passports_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this паспорт здоровья.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHealthPassport'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHealthPassport'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHealthPassport'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthPassport'
+          description: ''
+    delete:
+      operationId: api_health_passports_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this паспорт здоровья.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/health-passports/upcoming/:
+    get:
+      operationId: api_health_passports_upcoming_retrieve
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthPassport'
+          description: ''
+  /api/health-records/:
+    get:
+      operationId: api_health_records_list
+      parameters:
+      - in: query
+        name: cat
+        schema:
+          type: number
+      - in: query
+        name: date_from
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: date_to
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: due_from
+        schema:
+          type: string
+          format: date
+      - in: query
+        name: due_to
+        schema:
+          type: string
+          format: date
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: record_type
+        schema:
+          type: string
+          title: Тип записи
+          enum:
+          - analysis
+          - medication
+          - note
+          - treatment
+          - vaccination
+          - visit
+          - weight
+        description: |-
+          * `vaccination` - Вакцинация
+          * `visit` - Визит к врачу
+          * `treatment` - Лечение
+          * `medication` - Прием лекарств
+          * `analysis` - Анализ
+          * `weight` - Контроль веса
+          * `note` - Заметка
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHealthRecordList'
+          description: ''
+    post:
+      operationId: api_health_records_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthRecord'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HealthRecord'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HealthRecord'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthRecord'
+          description: ''
+  /api/health-records/{id}/:
+    get:
+      operationId: api_health_records_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this запись здоровья.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthRecord'
+          description: ''
+    put:
+      operationId: api_health_records_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this запись здоровья.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HealthRecord'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HealthRecord'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HealthRecord'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthRecord'
+          description: ''
+    patch:
+      operationId: api_health_records_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this запись здоровья.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHealthRecord'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHealthRecord'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHealthRecord'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthRecord'
+          description: ''
+    delete:
+      operationId: api_health_records_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this запись здоровья.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/health-records/upcoming/:
+    get:
+      operationId: api_health_records_upcoming_retrieve
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthRecord'
+          description: ''
+  /api/users/:
+    get:
+      operationId: api_users_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserList'
+          description: ''
+    post:
+      operationId: api_users_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+  /api/users/{id}/:
+    get:
+      operationId: api_users_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this пользователь.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    put:
+      operationId: api_users_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this пользователь.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    patch:
+      operationId: api_users_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this пользователь.
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUser'
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: ''
+    delete:
+      operationId: api_users_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this пользователь.
+        required: true
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    BloodTypeEnum:
+      enum:
+      - unknown
+      - a
+      - b
+      - ab
+      type: string
+      description: |-
+        * `unknown` - Неизвестно
+        * `a` - A
+        * `b` - B
+        * `ab` - AB
+    Cat:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        owner:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          title: Кличка
+          maxLength: 80
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+          title: Дата рождения
+        sex:
+          allOf:
+          - $ref: '#/components/schemas/SexEnum'
+          title: Пол
+        breed:
+          type: string
+          title: Порода
+          maxLength: 120
+        color:
+          type: string
+          title: Окрас
+          maxLength: 80
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Создан
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Обновлен
+      required:
+      - created_at
+      - id
+      - name
+      - owner
+      - updated_at
+    CatBrief:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+      required:
+      - id
+      - name
+    HealthPassport:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        cat:
+          allOf:
+          - $ref: '#/components/schemas/Cat'
+          readOnly: true
+        cat_id:
+          type: integer
+          writeOnly: true
+        microchip_number:
+          type: string
+          title: Номер микрочипа
+          maxLength: 64
+        blood_type:
+          allOf:
+          - $ref: '#/components/schemas/BloodTypeEnum'
+          title: Группа крови
+        sterilized:
+          type: boolean
+          title: Стерилизован/кастрирован
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+          title: Вес, кг
+        allergies:
+          type: string
+          title: Аллергии
+        chronic_conditions:
+          type: string
+          title: Хронические заболевания
+        veterinarian_name:
+          type: string
+          title: Ветеринар
+          maxLength: 120
+        clinic_phone:
+          type: string
+          title: Телефон клиники
+          maxLength: 40
+        emergency_notes:
+          type: string
+          title: Экстренные заметки
+        records_count:
+          type: integer
+          readOnly: true
+        upcoming_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Создан
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Обновлен
+      required:
+      - cat
+      - cat_id
+      - created_at
+      - id
+      - records_count
+      - upcoming_count
+      - updated_at
+    HealthRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        passport_id:
+          type: integer
+          writeOnly: true
+        cat:
+          allOf:
+          - $ref: '#/components/schemas/CatBrief'
+          readOnly: true
+        created_by:
+          type: string
+          readOnly: true
+        record_type:
+          allOf:
+          - $ref: '#/components/schemas/RecordTypeEnum'
+          title: Тип записи
+        title:
+          type: string
+          title: Название
+          maxLength: 160
+        event_date:
+          type: string
+          format: date
+          title: Дата события
+        next_due_date:
+          type: string
+          format: date
+          nullable: true
+          title: Следующий срок
+        clinic:
+          type: string
+          title: Клиника
+          maxLength: 160
+        doctor:
+          type: string
+          title: Врач
+          maxLength: 120
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+          title: Вес, кг
+        description:
+          type: string
+          title: Описание
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Создана
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Обновлена
+      required:
+      - cat
+      - created_at
+      - created_by
+      - id
+      - passport_id
+      - title
+      - updated_at
+    PaginatedCatList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Cat'
+    PaginatedHealthPassportList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthPassport'
+    PaginatedHealthRecordList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/HealthRecord'
+    PaginatedUserList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+    PatchedCat:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        owner:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          title: Кличка
+          maxLength: 80
+        birth_date:
+          type: string
+          format: date
+          nullable: true
+          title: Дата рождения
+        sex:
+          allOf:
+          - $ref: '#/components/schemas/SexEnum'
+          title: Пол
+        breed:
+          type: string
+          title: Порода
+          maxLength: 120
+        color:
+          type: string
+          title: Окрас
+          maxLength: 80
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Создан
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Обновлен
+    PatchedHealthPassport:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        cat:
+          allOf:
+          - $ref: '#/components/schemas/Cat'
+          readOnly: true
+        cat_id:
+          type: integer
+          writeOnly: true
+        microchip_number:
+          type: string
+          title: Номер микрочипа
+          maxLength: 64
+        blood_type:
+          allOf:
+          - $ref: '#/components/schemas/BloodTypeEnum'
+          title: Группа крови
+        sterilized:
+          type: boolean
+          title: Стерилизован/кастрирован
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+          title: Вес, кг
+        allergies:
+          type: string
+          title: Аллергии
+        chronic_conditions:
+          type: string
+          title: Хронические заболевания
+        veterinarian_name:
+          type: string
+          title: Ветеринар
+          maxLength: 120
+        clinic_phone:
+          type: string
+          title: Телефон клиники
+          maxLength: 40
+        emergency_notes:
+          type: string
+          title: Экстренные заметки
+        records_count:
+          type: integer
+          readOnly: true
+        upcoming_count:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Создан
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Обновлен
+    PatchedHealthRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        passport_id:
+          type: integer
+          writeOnly: true
+        cat:
+          allOf:
+          - $ref: '#/components/schemas/CatBrief'
+          readOnly: true
+        created_by:
+          type: string
+          readOnly: true
+        record_type:
+          allOf:
+          - $ref: '#/components/schemas/RecordTypeEnum'
+          title: Тип записи
+        title:
+          type: string
+          title: Название
+          maxLength: 160
+        event_date:
+          type: string
+          format: date
+          title: Дата события
+        next_due_date:
+          type: string
+          format: date
+          nullable: true
+          title: Следующий срок
+        clinic:
+          type: string
+          title: Клиника
+          maxLength: 160
+        doctor:
+          type: string
+          title: Врач
+          maxLength: 120
+        weight_kg:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+          nullable: true
+          title: Вес, кг
+        description:
+          type: string
+          title: Описание
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Создана
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Обновлена
+    PatchedUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: Имя пользователя
+          description: Обязательное поле. Не более 150 символов. Только буквы, цифры
+            и символы @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Адрес электронной почты
+          maxLength: 254
+        first_name:
+          type: string
+          title: Имя
+          maxLength: 150
+        last_name:
+          type: string
+          title: Фамилия
+          maxLength: 150
+        is_active:
+          type: boolean
+          title: Активный
+          description: Отметьте, если пользователь должен считаться активным. Уберите
+            эту отметку вместо удаления учётной записи.
+        is_staff:
+          type: boolean
+          title: Статус персонала
+          description: Отметьте, если пользователь может входить в административную
+            часть сайта.
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата регистрации
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        profile:
+          $ref: '#/components/schemas/Profile'
+    Profile:
+      type: object
+      properties:
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          title: Роль
+        role_display:
+          type: string
+          readOnly: true
+        phone:
+          type: string
+          title: Телефон
+          maxLength: 40
+        clinic:
+          type: string
+          title: Клиника
+          maxLength: 160
+        notes:
+          type: string
+          title: Заметки
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Создан
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Обновлен
+      required:
+      - created_at
+      - role_display
+      - updated_at
+    RecordTypeEnum:
+      enum:
+      - vaccination
+      - visit
+      - treatment
+      - medication
+      - analysis
+      - weight
+      - note
+      type: string
+      description: |-
+        * `vaccination` - Вакцинация
+        * `visit` - Визит к врачу
+        * `treatment` - Лечение
+        * `medication` - Прием лекарств
+        * `analysis` - Анализ
+        * `weight` - Контроль веса
+        * `note` - Заметка
+    RoleEnum:
+      enum:
+      - owner
+      - veterinarian
+      - admin
+      type: string
+      description: |-
+        * `owner` - Владелец
+        * `veterinarian` - Ветеринар
+        * `admin` - Администратор
+    SexEnum:
+      enum:
+      - male
+      - female
+      - unknown
+      type: string
+      description: |-
+        * `male` - Кот
+        * `female` - Кошка
+        * `unknown` - Неизвестно
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          title: Имя пользователя
+          description: Обязательное поле. Не более 150 символов. Только буквы, цифры
+            и символы @/./+/-/_.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Адрес электронной почты
+          maxLength: 254
+        first_name:
+          type: string
+          title: Имя
+          maxLength: 150
+        last_name:
+          type: string
+          title: Фамилия
+          maxLength: 150
+        is_active:
+          type: boolean
+          title: Активный
+          description: Отметьте, если пользователь должен считаться активным. Уберите
+            эту отметку вместо удаления учётной записи.
+        is_staff:
+          type: boolean
+          title: Статус персонала
+          description: Отметьте, если пользователь может входить в административную
+            часть сайта.
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+          title: Дата регистрации
+        password:
+          type: string
+          writeOnly: true
+          minLength: 8
+        profile:
+          $ref: '#/components/schemas/Profile'
+      required:
+      - date_joined
+      - id
+      - profile
+      - username
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

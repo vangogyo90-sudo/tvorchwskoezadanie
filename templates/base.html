@@ -1,0 +1,47 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}KittyCare{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{% url 'dashboard' %}">
+      <span class="brand-mark" aria-hidden="true">
+        <span class="brand-cross"></span>
+      </span>
+      <span class="brand-copy">
+        <strong>KittyCare</strong>
+        <small>pharmacy health</small>
+      </span>
+    </a>
+    <nav class="nav">
+      <a href="{% url 'swagger-ui' %}">Swagger</a>
+      <a href="{% url 'redoc' %}">Redoc</a>
+      <a href="/admin/">Django Admin</a>
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button class="link-button" type="submit">Выйти</button>
+        </form>
+      {% else %}
+        <a href="{% url 'register' %}">Регистрация</a>
+        <a href="{% url 'login' %}">Войти</a>
+      {% endif %}
+    </nav>
+  </header>
+  <main class="shell">
+    {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+          <div class="message {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

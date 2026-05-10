@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Вход - Kittygram Health{% endblock %}
+
+{% block content %}
+<section class="login-panel">
+  <div>
+    <p class="eyebrow">Электронная ветаптека</p>
+    <h1>Паспорт здоровья и назначения в одном кабинете</h1>
+    <p class="muted">Войдите, чтобы открыть рабочее окно для вашей роли.</p>
+  </div>
+  <form method="post" class="form-card">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="primary-button" type="submit">Войти</button>
+    <p class="auth-switch">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+  </form>
+</section>
+{% endblock %}

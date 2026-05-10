@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}Администрирование - KittyCare{% endblock %}
+
+{% block content %}
+<section class="med-header">
+  <div>
+    <p class="eyebrow">Окно роли: {{ role_name }}</p>
+    <h1>Пользователи, роли и системный журнал</h1>
+  </div>
+  <div class="metric-strip">
+    {% for label, value in stats.items %}
+      <span><strong>{{ value }}</strong>{{ label }}</span>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="workspace admin-workspace">
+  {% if can_manage_users %}
+    <aside class="side-rail">
+      <h2>Новый пользователь</h2>
+      <form method="post" class="stack-form">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create_user">
+        {{ user_form.as_p }}
+        <button class="primary-button" type="submit">Создать пользователя</button>
+      </form>
+    </aside>
+  {% endif %}
+
+  <section class="main-flow">
+    <div class="section-line">
+      <h2>Таблица пользователей</h2>
+      <a href="/api/users/">API users</a>
+    </div>
+    <div class="table-wrap compact-table">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Пользователь</th>
+            <th>Email</th>
+            <th>Роль</th>
+            <th>Клиника</th>
+            <th>Коты</th>
+            <th>Активен</th>
+            {% if can_manage_users %}<th></th>{% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for account in users %}
+            <tr>
+              <td>{{ account.id }}</td>
+              <td>{{ account.username }}</td>
+              <td>{{ account.email|default:"-" }}</td>
+              <td><span class="badge">{{ account.profile.get_role_display }}</span></td>
+              <td>{{ account.profile.clinic|default:"-" }}</td>
+              <td>{{ account.cats_total }}</td>
+              <td>{{ account.is_active|yesno:"да,нет" }}</td>
+              {% if can_manage_users %}
+                <td>
+                  {% if account.id != user.id %}
+                    <form method="post">
+                      {% csrf_token %}
+                      <input type="hidden" name="action" value="delete_user">
+                      <input type="hidden" name="user_id" value="{{ account.id }}">
+                      <button class="danger-button" type="submit">Удалить</button>
+                    </form>
+                  {% endif %}
+                </td>
+              {% endif %}
+            </tr>
+          {% empty %}
+            <tr><td colspan="8">Пользователей пока нет.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-line">
+      <h2>Последние медицинские записи</h2>
+      <a href="/api/health-records/">API records</a>
+    </div>
+    <div class="prescription-list">
+      {% for record in records %}
+        <div class="prescription-row">
+          <time>{{ record.event_date }}</time>
+          <strong>{{ record.title }}</strong>
+          <span>{{ record.passport.cat.name }} · автор: {{ record.created_by }}</span>
+        </div>
+      {% empty %}
+        <p class="muted">Записей пока нет.</p>
+      {% endfor %}
+    </div>
+  </section>
+</section>
+{% endblock %}
