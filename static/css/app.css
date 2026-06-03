@@ -342,6 +342,30 @@ textarea:focus {
   padding: 14px 12px;
 }
 
+.feed-list {
+  display: grid;
+  gap: 14px;
+}
+
+.feed-card {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.feed-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-detail {
+  background: rgba(255, 255, 255, 0.94);
+  border-left: 4px solid var(--primary);
+  padding: 18px;
+}
+
 .registry-row:hover,
 .prescription-row:hover,
 tbody tr:hover {

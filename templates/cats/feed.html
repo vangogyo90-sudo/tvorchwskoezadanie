@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Лента — KittyGram{% endblock %}
+
+{% block content %}
+<section class="med-header">
+  <h1>Лента питомцев</h1>
+  <p class="eyebrow">Вдохновлено макетом из задания</p>
+</section>
+
+<section class="workspace">
+  <div class="main-flow">
+    <div class="section-line">
+      <h2>Последние питомцы</h2>
+      <a href="{% url 'add-cat' %}">Добавить питомца</a>
+    </div>
+
+    <div class="feed-list">
+      {% for cat in cats %}
+        <article class="feed-card">
+          <header>
+            <strong>{{ cat.name }}</strong>
+            <span class="muted">{{ cat.owner.username }} · {{ cat.get_sex_display }}</span>
+          </header>
+          <div class="card-body">
+            <p>{{ cat.breed|default:"Порода не указана" }} · {{ cat.color|default:"окрас" }}</p>
+            <a class="link-button" href="{% url 'cat-detail' cat.id %}">Открыть</a>
+          </div>
+        </article>
+      {% empty %}
+        <p class="muted">Питомцы пока не добавлены.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

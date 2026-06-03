@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}{{ cat.name }} — KittyGram{% endblock %}
+
+{% block content %}
+<section class="med-header">
+  <h1>{{ cat.name }}</h1>
+  <p class="eyebrow">Профиль питомца</p>
+</section>
+
+<section class="workspace">
+  <div class="main-flow">
+    <div class="card-detail">
+      <h2>{{ cat.name }}</h2>
+      <p><strong>Владелец:</strong> {{ cat.owner.username }}</p>
+      <p><strong>Порода:</strong> {{ cat.breed|default:"не указана" }}</p>
+      <p><strong>Пол:</strong> {{ cat.get_sex_display }}</p>
+      <p><strong>Окрас:</strong> {{ cat.color|default:"не указан" }}</p>
+      <p><strong>Дата рождения:</strong> {{ cat.birth_date|default:"-" }}</p>
+      <a href="{% url 'feed' %}">Вернуться в ленту</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
