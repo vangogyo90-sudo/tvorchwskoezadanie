@@ -5,10 +5,11 @@ from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
-from .models import Clinic, Doctor, HealthPassport, HealthRecord
+from .models import Clinic, Doctor, HealthPassport, HealthRecord, Vaccine, VaccineAdministration
 from .permissions import IsPassportOwner
 from .serializers import (ClinicSerializer, DoctorSerializer,
-                          HealthPassportSerializer, HealthRecordSerializer)
+                          HealthPassportSerializer, HealthRecordSerializer,
+                          VaccineSerializer, VaccineAdministrationSerializer)
 
 
 class HealthRecordFilter(django_filters.FilterSet):
@@ -77,4 +78,23 @@ class DoctorViewSet(viewsets.ModelViewSet):
     search_fields = ("name", "specialization")
     ordering_fields = ("name",)
     # Use standard DRF pagination/search on GET /api/doctors/
+    pagination_class = StandardResultsSetPagination
+
+
+class VaccineViewSet(viewsets.ModelViewSet):
+    serializer_class = VaccineSerializer
+    queryset = Vaccine.objects.all()
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    search_fields = ("name", "manufacturer")
+    ordering_fields = ("name",)
+    pagination_class = StandardResultsSetPagination
+
+
+class VaccineAdministrationViewSet(viewsets.ModelViewSet):
+    serializer_class = VaccineAdministrationSerializer
+    queryset = VaccineAdministration.objects.select_related('vaccine', 'passport', 'doctor', 'clinic')
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
+    filterset_fields = ("vaccine__name", "passport__cat__name", "administered_at")
+    search_fields = ("vaccine__name", "passport__cat__name")
+    ordering_fields = ("administered_at",)
     pagination_class = StandardResultsSetPagination

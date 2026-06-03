@@ -84,3 +84,35 @@ class Doctor(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.clinic.name if self.clinic else 'no clinic'})"
+
+
+class Vaccine(models.Model):
+    """Catalog of vaccines."""
+    name = models.CharField(max_length=200, unique=True)
+    manufacturer = models.CharField(max_length=200, blank=True)
+    description = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ('name',)
+
+    def __str__(self):
+        return self.name
+
+
+class VaccineAdministration(models.Model):
+    """A record that a given vaccine was administered to a passport (cat)."""
+    vaccine = models.ForeignKey(Vaccine, on_delete=models.PROTECT, related_name='administrations')
+    passport = models.ForeignKey(HealthPassport, on_delete=models.CASCADE, related_name='vaccine_administrations')
+    administered_at = models.DateField()
+    dose = models.CharField(max_length=100, blank=True)
+    clinic = models.ForeignKey(Clinic, on_delete=models.SET_NULL, null=True, blank=True, related_name='vaccine_administrations')
+    doctor = models.ForeignKey(Doctor, on_delete=models.SET_NULL, null=True, blank=True, related_name='vaccine_administrations')
+    created_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='created_vaccine_admins')
+    created_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ('-administered_at',)
+        unique_together = (('vaccine', 'passport', 'administered_at'),)
+
+    def __str__(self):
+        return f"{self.vaccine.name} for {self.passport.cat.name} on {self.administered_at}"

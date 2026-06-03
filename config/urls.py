@@ -21,7 +21,8 @@ from django.contrib import admin
 from django.urls import include, path
 from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
                                    SpectacularSwaggerView)
-from health.views import HealthPassportViewSet, HealthRecordViewSet, ClinicViewSet, DoctorViewSet
+from health.views import (ClinicViewSet, DoctorViewSet, HealthPassportViewSet,
+                          HealthRecordViewSet, VaccineViewSet, VaccineAdministrationViewSet)
 from rest_framework.permissions import AllowAny
 from rest_framework.routers import DefaultRouter
 
@@ -31,6 +32,8 @@ router.register("health-passports", HealthPassportViewSet, basename="health-pass
 router.register("health-records", HealthRecordViewSet, basename="health-records")
 router.register("clinics", ClinicViewSet, basename="clinics")
 router.register("doctors", DoctorViewSet, basename="doctors")
+router.register("vaccines", VaccineViewSet, basename="vaccines")
+router.register("vaccine-administrations", VaccineAdministrationViewSet, basename="vaccine-administrations")
 
 urlpatterns = [
     path('admin/', admin.site.urls),
