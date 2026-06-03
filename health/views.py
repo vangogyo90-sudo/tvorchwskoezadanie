@@ -58,7 +58,7 @@ class HealthRecordViewSet(viewsets.ModelViewSet):
     permission_classes = (IsPassportOwner,)
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     filterset_class = HealthRecordFilter
-    search_fields = ("notes",)
+    search_fields = ("title", "description", "passport__cat__name", "doctor__name", "clinic__name")
     ordering_fields = ("event_date",)
     # Default list() will be unpaginated; provide separate actions for paginated and search
 
@@ -76,12 +76,13 @@ class HealthRecordViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=["post"], url_path="complete")
+    @action(detail=True, methods=["post", "get"], url_path="complete")
     def complete(self, request, pk=None):
-        """Mark a HealthRecord as completed."""
+        """GET: return the record; POST: mark a HealthRecord as completed."""
         record = self.get_object()
-        record.is_completed = True
-        record.save()
+        if request.method == 'POST':
+            record.is_completed = True
+            record.save()
         serializer = self.get_serializer(record)
         return Response(serializer.data)
 
