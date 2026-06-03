@@ -1,6 +1,8 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from .models import HealthPassport, HealthRecord, Clinic, Doctor
 from .permissions import IsPassportOwner
@@ -43,7 +45,21 @@ class HealthRecordViewSet(viewsets.ModelViewSet):
     filterset_class = HealthRecordFilter
     search_fields = ("notes",)
     ordering_fields = ("event_date",)
-    pagination_class = StandardResultsSetPagination
+    # Default list() will be unpaginated; provide separate actions for paginated and search
+
+    @action(detail=False, methods=["get"], url_path="paginated")
+    def paginated(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        paginator = StandardResultsSetPagination()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+        serializer = self.get_serializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path="search")
+    def search(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class ClinicViewSet(viewsets.ModelViewSet):

@@ -3,6 +3,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from .forms import CatForm
 from .models import Cat
@@ -21,7 +23,23 @@ class CatViewSet(viewsets.ModelViewSet):
     class StandardResultsSetPagination(PageNumberPagination):
         page_size = 10
 
-    pagination_class = StandardResultsSetPagination
+    # Default list() will return an unpaginated full list (so GET /api/cats/ is plain)
+    # Provide two separate actions: /api/cats/paginated/ and /api/cats/search/
+
+    @action(detail=False, methods=["get"], url_path="paginated")
+    def paginated(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        paginator = self.StandardResultsSetPagination()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+        serializer = self.get_serializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+    @action(detail=False, methods=["get"], url_path="search")
+    def search(self, request, *args, **kwargs):
+        # Use DRF filter backends (SearchFilter) via filter_queryset
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):
         if getattr(self, "swagger_fake_view", False):
