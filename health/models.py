@@ -44,12 +44,15 @@ class HealthRecord(models.Model):
 
     passport = models.ForeignKey(HealthPassport, on_delete=models.CASCADE, related_name='records')
     event_date = models.DateField()
+    next_due_date = models.DateField(null=True, blank=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     record_type = models.CharField(max_length=32, choices=RECORD_TYPE_CHOICES, default=TYPE_OTHER)
     # Optional links to clinic and doctor
     clinic = models.ForeignKey('Clinic', on_delete=models.SET_NULL, related_name='records', null=True, blank=True)
     doctor = models.ForeignKey('Doctor', on_delete=models.SET_NULL, related_name='records', null=True, blank=True)
+    created_by = models.ForeignKey('auth.User', on_delete=models.SET_NULL, null=True, blank=True, related_name='created_records')
+    is_completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
