@@ -7,6 +7,9 @@ services:
       - static_data:/app/staticfiles
     ports:
       - "8000:8000"
+    restart: unless-stopped
+    env_file:
+      - .env
     environment:
       - PYTHONUNBUFFERED=1
       - DJANGO_SETTINGS_MODULE=config.settings
