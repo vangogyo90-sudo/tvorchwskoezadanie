@@ -35,45 +35,8 @@ class HealthPassportViewSet(viewsets.ModelViewSet):
     filterset_fields = ("cat__name", "microchip_number", "blood_type", "cat__owner__username")
     search_fields = ("cat__name", "microchip_number")
     ordering_fields = ("created_at",)
-    # Default list() will be unpaginated; provide separate paginated and search actions
-
-    @action(detail=False, methods=["get"], url_path="paginated")
-    def paginated(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        paginator = StandardResultsSetPagination()
-        page = paginator.paginate_queryset(queryset, request, view=self)
-        serializer = self.get_serializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    @action(detail=False, methods=["get"], url_path="search")
-    def search(self, request, *args, **kwargs):
-        # Implement guarded manual search to avoid FieldError from invalid lookups
-        q = request.query_params.get('search', '').strip()
-        base_qs = self.get_queryset()
-        if not q:
-            serializer = self.get_serializer(base_qs, many=True)
-            return Response(serializer.data)
-
-        from django.db.models import Q
-
-        search_fields = ("title", "description", "passport__cat__name", "doctor__name", "clinic__name")
-        combined = Q()
-        for field in search_fields:
-            lookup = f"{field}__icontains"
-            try:
-                combined |= Q(**{lookup: q})
-            except Exception:
-                # ignore invalid lookups and continue
-                continue
-
-        try:
-            queryset = base_qs.filter(combined)
-        except Exception:
-            # fallback to base queryset if filtering fails
-            queryset = base_qs
-
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    # Use standard DRF pagination/search on GET /api/health-passports/
+    pagination_class = StandardResultsSetPagination
 
 
 class HealthRecordViewSet(viewsets.ModelViewSet):
@@ -84,29 +47,15 @@ class HealthRecordViewSet(viewsets.ModelViewSet):
     filterset_class = HealthRecordFilter
     search_fields = ("title", "description", "passport__cat__name", "doctor__name", "clinic__name")
     ordering_fields = ("event_date",)
-    # Default list() will be unpaginated; provide separate actions for paginated and search
+    # Use standard DRF pagination/search on GET /api/health-records/
+    pagination_class = StandardResultsSetPagination
 
-    @action(detail=False, methods=["get"], url_path="paginated")
-    def paginated(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        paginator = StandardResultsSetPagination()
-        page = paginator.paginate_queryset(queryset, request, view=self)
-        serializer = self.get_serializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    @action(detail=False, methods=["get"], url_path="search")
-    def search(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-
-    @action(detail=True, methods=["post", "get"], url_path="complete")
+    @action(detail=True, methods=["post"], url_path="complete")
     def complete(self, request, pk=None):
-        """GET: return the record; POST: mark a HealthRecord as completed."""
+        """POST: mark a HealthRecord as completed."""
         record = self.get_object()
-        if request.method == 'POST':
-            record.is_completed = True
-            record.save()
+        record.is_completed = True
+        record.save()
         serializer = self.get_serializer(record)
         return Response(serializer.data)
 
@@ -117,21 +66,8 @@ class ClinicViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ("name", "address")
     ordering_fields = ("name",)
-    # Default list() unpaginated; expose paginated and search actions
-
-    @action(detail=False, methods=["get"], url_path="paginated")
-    def paginated(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        paginator = StandardResultsSetPagination()
-        page = paginator.paginate_queryset(queryset, request, view=self)
-        serializer = self.get_serializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    @action(detail=False, methods=["get"], url_path="search")
-    def search(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    # Use standard DRF pagination/search on GET /api/clinics/
+    pagination_class = StandardResultsSetPagination
 
 
 class DoctorViewSet(viewsets.ModelViewSet):
@@ -140,18 +76,5 @@ class DoctorViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     search_fields = ("name", "specialization")
     ordering_fields = ("name",)
-    # Default list() unpaginated; expose paginated and search actions
-
-    @action(detail=False, methods=["get"], url_path="paginated")
-    def paginated(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        paginator = StandardResultsSetPagination()
-        page = paginator.paginate_queryset(queryset, request, view=self)
-        serializer = self.get_serializer(page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    @action(detail=False, methods=["get"], url_path="search")
-    def search(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
+    # Use standard DRF pagination/search on GET /api/doctors/
+    pagination_class = StandardResultsSetPagination
