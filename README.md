@@ -44,24 +44,43 @@ python manage.py runserver
 
 | URL | Методы | Доступ | Назначение |
 | --- | --- | --- | --- |
-| `/` | GET | Авторизованный | Редирект в окно текущей роли. |
-| `/owner/` | GET | Владелец/любой авторизованный | Окно владельца с его котами и записями. |
-| `/vet/` | GET | Авторизованный ветеринар | Клиническое окно по всем пациентам. |
-| `/admin-panel/` | GET | Администратор | Таблица пользователей и системная статистика. |
- 
+| `/` | GET | Авторизованный/гость | Главная страница / дашборд (redir по роли при авторизации). |
+| `/owner/` | GET | Владелец | Окно владельца с его котами и записями. |
+| `/vet/` | GET | Ветеринар | Вет-интерфейс по пациентам. |
+| `/admin-panel/` | GET | Администратор | Таблица пользователей и статистика. |
 | `/api/users/` | GET/POST | Администратор | Список и создание пользователей. |
 | `/api/users/{id}/` | GET/PATCH/PUT/DELETE | Администратор | Детальная работа с пользователем. |
-| `/api/cats/` | GET/POST | Авторизованный | Коты: владелец видит своих, ветеринар/админ всех. |
-| `/api/cats/{id}/` | GET/PATCH/PUT/DELETE | Авторизованный | Владелец только просматривает своего кота; ветеринар/админ могут менять и удалять. |
-| `/api/health-passports/` | GET/POST | Авторизованный | Владелец только просматривает свои паспорта; ветеринар/админ создают и меняют. |
-| `/api/health-passports/{id}/` | GET/PATCH/PUT/DELETE | Авторизованный | Детальная работа с паспортом по правам роли. |
-| `/api/health-passports/upcoming/` | GET | Авторизованный | Ближайшие события по `next_due_date`. |
-| `/api/health-records/` | GET/POST | Авторизованный | Владелец только просматривает свои записи; ветеринар/админ создают и меняют. |
-| `/api/health-records/{id}/` | GET/PATCH/PUT/DELETE | Авторизованный | Детальная работа с записью по правам роли. |
-| `/api/health-records/upcoming/` | GET | Авторизованный | Записи с будущим сроком. |
-| `/api/docs/` | GET | Все | Swagger UI. |
-| `/api/redoc/` | GET | Все | Redoc. |
-| `/api/schema/` | GET | Все | OpenAPI schema. |
+
+| `/api/cats/` | GET/POST | Авторизованные | Список котов (unpaginated) / создать кота. |
+| `/api/cats/paginated/` | GET | Авторизованные | Пагинированный список котов. |
+| `/api/cats/search/` | GET | Авторизованные | Поиск котов (`?search=...`). |
+| `/api/cats/{id}/` | GET/PATCH/PUT/DELETE | Авторизованные | Детали/редактирование/удаление кота. |
+
+| `/api/health-passports/` | GET/POST | Авторизованные | Список паспортов (unpaginated) / создать паспорт. |
+| `/api/health-passports/paginated/` | GET | Авторизованные | Пагинация паспортов. |
+| `/api/health-passports/search/` | GET | Авторизованные | Поиск паспортов (`?search=...`). |
+| `/api/health-passports/{id}/` | GET/PATCH/PUT/DELETE | Авторизованные | Детали/редактирование паспорта. |
+| `/api/health-passports/upcoming/` | GET | Авторизованные | Ближайшие события по `next_due_date`. |
+
+| `/api/health-records/` | GET/POST | Авторизованные | Список медицинских записей (unpaginated) / создать запись. |
+| `/api/health-records/paginated/` | GET | Авторизованные | Пагинация записей. |
+| `/api/health-records/search/` | GET | Авторизованные | Поиск/фильтрация записей. |
+| `/api/health-records/{id}/` | GET/PATCH/PUT/DELETE | Авторизованные | Детали/редактирование записи. |
+| `/api/health-records/upcoming/` | GET | Авторизованные | Записи с будущим сроком. |
+
+| `/api/clinics/` | GET/POST | Авторизованные | Список клиник / создать клинику. |
+| `/api/clinics/paginated/` | GET | Авторизованные | Пагинация клиник. |
+| `/api/clinics/search/` | GET | Авторизованные | Поиск клиник. |
+| `/api/clinics/{id}/` | GET/PATCH/PUT/DELETE | Авторизованные | Детали/редактирование клиники. |
+
+| `/api/doctors/` | GET/POST | Авторизованные | Список врачей / создать врача. |
+| `/api/doctors/paginated/` | GET | Авторизованные | Пагинация врачей. |
+| `/api/doctors/search/` | GET | Авторизованные | Поиск врачей. |
+| `/api/doctors/{id}/` | GET/PATCH/PUT/DELETE | Авторизованные | Детали/редактирование врача. |
+
+| `/api/docs/` | GET | Все | Swagger UI (public). |
+| `/api/redoc/` | GET | Все | ReDoc (public). |
+| `/api/schema/` | GET | Все | OpenAPI schema (YAML/JSON). |
 
 ## Примеры запросов
 
