@@ -307,3 +307,4 @@ docker compose down
 python manage.py test
 python manage.py spectacular --file schema.yml
 ```
+# tvorchwskoezadanie
