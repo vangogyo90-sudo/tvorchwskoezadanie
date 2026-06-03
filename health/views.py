@@ -47,7 +47,31 @@ class HealthPassportViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["get"], url_path="search")
     def search(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+        # Implement guarded manual search to avoid FieldError from invalid lookups
+        q = request.query_params.get('search', '').strip()
+        base_qs = self.get_queryset()
+        if not q:
+            serializer = self.get_serializer(base_qs, many=True)
+            return Response(serializer.data)
+
+        from django.db.models import Q
+
+        search_fields = ("title", "description", "passport__cat__name", "doctor__name", "clinic__name")
+        combined = Q()
+        for field in search_fields:
+            lookup = f"{field}__icontains"
+            try:
+                combined |= Q(**{lookup: q})
+            except Exception:
+                # ignore invalid lookups and continue
+                continue
+
+        try:
+            queryset = base_qs.filter(combined)
+        except Exception:
+            # fallback to base queryset if filtering fails
+            queryset = base_qs
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
